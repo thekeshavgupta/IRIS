@@ -9,7 +9,7 @@ Intent Reactive Intelligent Search
 - **Finalise the dataset to be used with proper queries and relevance information**
     - For the purpose for this project, NQ dataset from Google is used
     - https://ai.google.com/research/NaturalQuestions/dataset
-### Phase-1 - In Progress
+### Phase-1 - Completed
 - **Data loading**
     - Preparing scripts for loading the data
 - **Intent Creation for training data**
