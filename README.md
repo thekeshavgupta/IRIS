@@ -3,16 +3,23 @@ Intent Reactive Intelligent Search
 
 
 ## Phases which were followed for the project development
-### Phase-0 - In Progress
+### Phase-0 - Completed
 - **Finalise the scope of the project**
-    - In this project we are focussing on E-commerce search relevance
+    - In this project we are focussing on Natural Question search relevance
 - **Finalise the dataset to be used with proper queries and relevance information**
-    - TBU
-### Phase-1 - Not Started
+    - For the purpose for this project, NQ dataset from Google is used
+    - https://ai.google.com/research/NaturalQuestions/dataset
+### Phase-1 - In Progress
 - **Data loading**
     - Preparing scripts for loading the data
 - **Intent Creation for training data**
-    - For each queries, prepare a intent taxonomy
+    - Since on high level, NQ dataset queries are mostly informational based intent, still we have classified intent at more granular level:
+        - Factual
+        - Definition
+        - Entity
+        - List
+        - Procedural/how-based
+        - Comparison
 - **Contrastive Learning**
     - Preparing a training triplet
 ### Phase-2 - Not Started
