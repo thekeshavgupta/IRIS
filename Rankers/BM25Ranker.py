@@ -6,7 +6,7 @@ class BM25Ranker():
         self.data =data
         self.corpus = corpus
         self.k = top_k_rank
-    def get_relevant_rank(self, text, goldAnswer = ""):
+    def __get_relevant_rank(self, text, goldAnswer = ""):
         goldAnswer = self.data[(self.data['question'] == text) & (self.data['relevance_label'] == 1)]['long_answers'].values[0]
         ranker = BM25Okapi(self.corpus)
         query = text
@@ -22,12 +22,12 @@ class BM25Ranker():
             return sorted_relevant_output.index(relevance_score)+1
         else:
             return 0
-    def get_bm25_mrr(self, score):
+    def __get_bm25_mrr(self, score):
         if score == 0:
             return 0
         else:
             return 1/score
-    def calculate_bm25_ndcg(self, rankIndex):
+    def __calculate_bm25_ndcg(self, rankIndex):
         relevant_score=6
         irrelevant_score=2
         
@@ -44,17 +44,17 @@ class BM25Ranker():
         
         return dcg/idcg
     
-    def getBMRank(self):
-        self.data['bm25Rank'] = self.data['question'].apply(self.get_relevant_rank)
+    def __getBMRank(self):
+        self.data['bm25Rank'] = self.data['question'].apply(self.__get_relevant_rank)
 
-    def getBMMRRScore(self):
-        self.data['bm25_mrr'] = self.data['bm25Rank'].apply(self.get_bm25_mrr)
+    def __getBMMRRScore(self):
+        self.data['bm25_mrr'] = self.data['bm25Rank'].apply(self.__get_bm25_mrr)
     
-    def getBMNDCGScore(self):
-        self.data['bm25_ndcg'] = self.data['bm25Rank'].apply(self.calculate_bm25_ndcg)
+    def __getBMNDCGScore(self):
+        self.data['bm25_ndcg'] = self.data['bm25Rank'].apply(self.__calculate_bm25_ndcg)
     
     def getFullScoringData(self):
-        self.getBMRank()
-        self.getBMMRRScore()
-        self.getBMNDCGScore()
+        self.__getBMRank()
+        self.__getBMMRRScore()
+        self.__getBMNDCGScore()
         return self.data

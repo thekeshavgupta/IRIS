@@ -8,7 +8,7 @@ class SBertRanker():
         self.corpus = corpus
         self.corpus_embeddings = self.model.encode(corpus, convert_to_tensor=True)
     
-    def get_relevant_score(self, query):
+    def __get_relevant_score(self, query):
         goldAnswer = self.data[(self.data['question'] == query) & (self.data['relevance_label'] == 1)]['long_answers'].values[0]
         query_embeddings = self.model.encode(query, convert_to_tensor=True)
         goldAnswerCorpusIndex = self.corpus.index(goldAnswer)
@@ -18,13 +18,13 @@ class SBertRanker():
                 return hit+1
         return 0
         
-    def get_sbert_mrr_score(self, rankIndex):
+    def __get_sbert_mrr_score(self, rankIndex):
         if rankIndex == 0:
             return 0
         else:
             return 1/rankIndex
         
-    def calculate_sbert_ndcg(self, rankIndex):
+    def __calculate_sbert_ndcg(self, rankIndex):
         relevant_score=6
         irrelevant_score=2
         
@@ -41,19 +41,19 @@ class SBertRanker():
         
         return dcg/idcg
     
-    def sBertRank(self):
-        self.data['sbert_rank'] = self.data['question'].apply(self.get_relevant_score)
+    def __sBertRank(self):
+        self.data['sbert_rank'] = self.data['question'].apply(self.__get_relevant_score)
     
-    def sBertMRR(self):
-        self.data['sbert_mrr'] = self.data['sbert_rank'].apply(self.get_sbert_mrr_score)
+    def __sBertMRR(self):
+        self.data['sbert_mrr'] = self.data['sbert_rank'].apply(self.__get_sbert_mrr_score)
     
-    def sBertNDCG(self):
-        self.data['sbert_ndcg'] = self.data['sbert_rank'].apply(self.calculate_sbert_ndcg)
+    def __sBertNDCG(self):
+        self.data['sbert_ndcg'] = self.data['sbert_rank'].apply(self.__calculate_sbert_ndcg)
         
     def getFullScoringData(self):
-        self.sBertRank()
-        self.sBertMRR()
-        self.sBertNDCG()
+        self.__sBertRank()
+        self.__sBertMRR()
+        self.__sBertNDCG()
         return self.data
         
     

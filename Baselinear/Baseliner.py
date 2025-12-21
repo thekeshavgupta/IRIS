@@ -11,7 +11,7 @@ class Baseliner():
         self.rowCount= data.shape[0]
         self.colCount = data.shape[1]
     
-    def prepareTrainDevTestDataset(self):
+    def __prepareTrainDevTestDataset(self):
         train_data = self.data.iloc[:int(0.7*self.rowCount),:]
         dev_data = self.data.iloc[int(0.7*self.rowCount):int(0.8*self.rowCount),:]
         test_data = self.data.iloc[int(0.8*self.rowCount):,:]
@@ -19,7 +19,7 @@ class Baseliner():
         return [train_data, dev_data, test_data]
     
     # Implementing the method for generating the relevance scoring dataset basically groundTruth labels
-    def generate_relevance_scoring_data(self, df):
+    def __generate_relevance_scoring_data(self, df):
         output_df = pd.DataFrame()
         for index, data in df.iterrows():
             output_df = pd.concat([output_df, pd.DataFrame(data=[{
@@ -42,10 +42,10 @@ class Baseliner():
     
     
     def prepareBaselines(self, useBM25 = False, useSBert = False, prepareTrainBaseliner = False, prepareDevBaseliner = False, prepareTestBaseliner = False):
-        [train_data, dev_data, test_data] = self.prepareTrainDevTestDataset()
+        [train_data, dev_data, test_data] = self.__prepareTrainDevTestDataset()
         
         if prepareTrainBaseliner:
-            train_data = self.generate_relevance_scoring_data(train_data[:100])
+            train_data = self.__generate_relevance_scoring_data(train_data[:100])
             
             doc_corpus = list(set(list(train_data.iloc[:,1].values)))
             tokenised_corpus = [ans.split() for ans in doc_corpus]

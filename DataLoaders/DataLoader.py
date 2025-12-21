@@ -6,7 +6,7 @@ class DataLoader:
     def __init__(self, dataset_path):
         self.dataset_path = dataset_path
     
-    def preprocess_text(self, text, use_stopwords=True):
+    def __preprocess_text(self, text, use_stopwords=True):
         stopwordsList = set(["the", "is", "in", "and", "to", "a", "of", "that", "it", "on", "for", "as", "with", "was", "at", "by", "an"])
         lemmatiser = WordNetLemmatizer()
         output = []
@@ -18,7 +18,7 @@ class DataLoader:
                 output.append(word)
         return ' '.join(output)
     
-    def classify_intent(self, query):
+    def __classify_intent(self, query):
         if("what is" in query or "define" in query or "meaning of" in query):
             return 'definition'
         elif("how many" in query or "list of" in query or "types of" in query or "type of" in query or "list out" in query):
@@ -31,17 +31,17 @@ class DataLoader:
             return "entity"
         else:
             return "factual"
-    def clean_data(self, raw_data):
+    def __clean_data(self, raw_data):
         raw_data.drop_duplicates(inplace=True)
         raw_data = raw_data[['question', 'long_answers']]
-        raw_data['question'] = raw_data['question'].apply(self.preprocess_text, use_stopwords = False)      
-        raw_data['long_answers'] = raw_data['long_answers'].apply(self.preprocess_text, use_stopwords = False) 
-        raw_data['intent'] = raw_data['question'].apply(self.classify_intent)
+        raw_data['question'] = raw_data['question'].apply(self.__preprocess_text, use_stopwords = False)      
+        raw_data['long_answers'] = raw_data['long_answers'].apply(self.__preprocess_text, use_stopwords = False) 
+        raw_data['intent'] = raw_data['question'].apply(self.__classify_intent)
         return raw_data
     
     def load_and_clean_data(self):
         raw_data = pd.read_csv(self.dataset_path)
-        cleaned_data = self.clean_data(raw_data)
+        cleaned_data = self.__clean_data(raw_data)
         print("#"*100)
         print("Data Preprocessing Completed!!")
         print("#"*100)
