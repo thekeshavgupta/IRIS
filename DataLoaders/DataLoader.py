@@ -42,9 +42,12 @@ class DataLoader:
     def load_and_clean_data(self):
         raw_data = pd.read_csv(self.dataset_path)
         cleaned_data = self.clean_data(raw_data)
+        print("#"*100)
+        print("Data Preprocessing Completed!!")
+        print("#"*100)
         return cleaned_data
     
-    def prepare_filtered_data(self, outputPath):
-        data = self.load_and_clean_data()
-        data.to_csv(outputPath)
-        print(f"Cleaned data saved to {outputPath}")
+    # def prepare_filtered_data(self, outputPath):
+    #     data = self.load_and_clean_data()
+    #     data.to_csv(outputPath)
+    #     print(f"Cleaned data saved to {outputPath}")

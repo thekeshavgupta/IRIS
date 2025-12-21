@@ -22,7 +22,7 @@ Intent Reactive Intelligent Search
         - Comparison
 - **Contrastive Learning**
     - Preparing a training triplet
-### Phase-2 - In Progress
+### Phase-2 - Completed
 - **Learning certain existing search ranking methods**
     - BM25
     - BERT-CLS Scoring
@@ -30,7 +30,7 @@ Intent Reactive Intelligent Search
     - *Store their MRR/NDCG*
 - **Preparing the baselines**
     - For better comparison, it is good to prepare these baselines
-    - As of now, I have already calculated the MRR scores for BM25 ranker
+    - I have already prepared two baseline corresponding to bm25 ranking algo along with mrr and ndcg scores and similarly another one corresponding to sbert algo.
 ### Phase-3 - Not Started
 - Intent encoder
     - It outputs query intent which is a vector
