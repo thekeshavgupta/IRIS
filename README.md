@@ -31,8 +31,8 @@ Intent Reactive Intelligent Search
 - **Preparing the baselines**
     - For better comparison, it is good to prepare these baselines
     - I have already prepared two baseline corresponding to bm25 ranking algo along with mrr and ndcg scores and similarly another one corresponding to sbert algo.
-### Phase-3 - Not Started
-- Intent encoder
+### Phase-3 - In progress
+- Intent encoder: Implementation completed
     - It outputs query intent which is a vector
 - Contextual search encoder
     - It outputs embeddings of query and documents
