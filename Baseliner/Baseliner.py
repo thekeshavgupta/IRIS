@@ -41,11 +41,11 @@ class Baseliner():
         return output_df
     
     
-    def prepareBaselines(self, useBM25 = False, useSBert = False, prepareTrainBaseliner = False, prepareDevBaseliner = False, prepareTestBaseliner = False):
+    def prepareBaselines(self, useBM25 = False, useSBert = False, prepareTrainBaseliner = False, prepareDevBaseliner = False, prepareTestBaseliner = False, training_subcount = 100):
         [train_data, dev_data, test_data] = self.__prepareTrainDevTestDataset()
         
         if prepareTrainBaseliner:
-            train_data = self.__generate_relevance_scoring_data(train_data[:100])
+            train_data = self.__generate_relevance_scoring_data(train_data[:training_subcount])
             
             doc_corpus = list(set(list(train_data.iloc[:,1].values)))
             tokenised_corpus = [ans.split() for ans in doc_corpus]

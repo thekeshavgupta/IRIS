@@ -34,27 +34,28 @@ class Scorer():
         if not dataset_path.exists():
             print("Dataset not found. Preparing dataset...")
             self.__prepareDataset()
-        else:
-            t = torch.load('feature_embedding_tensor_train.pt')
-            t = t.squeeze(1)
-            print("Dataset already exists. Skipping preparation.")
-            self.data = pd.read_csv('relevance_training_data_with_baselines.csv')
-            l= torch.tensor(self.data['relevance_label'].to_list(), dtype=torch.float32).reshape(-1,1)
-            loss = nn.BCEWithLogitsLoss()
-            optim = torch.optim.Adam(self.scoringModel.parameters(), lr=learning_rate)
-            for epoch in range(epochs):
-                output = self.scoringModel(t)
-                loss_value = loss(output, l)
-                
-                optim.zero_grad()
-                loss_value.backward()
-                optim.step()
-                
-                print(f"Epoch: {epoch+1} === Loss: {loss_value}")            
+
+        t = torch.load('feature_embedding_tensor_train.pt')
+        t = t.squeeze(1)
+        print("Dataset already exists. Skipping preparation.")
+        self.data = pd.read_csv('relevance_training_data_with_baselines.csv')
+        l= torch.tensor(self.data['relevance_label'].to_list(), dtype=torch.float32).reshape(-1,1)
+        loss = nn.BCEWithLogitsLoss()
+        optim = torch.optim.Adam(self.scoringModel.parameters(), lr=learning_rate)
+        for epoch in range(epochs):
+            output = self.scoringModel(t)
+            loss_value = loss(output, l)
             
-            # resetting the model to eval mode
-            self.scoringModel.eval()
+            optim.zero_grad()
+            loss_value.backward()
+            optim.step()
+            
+            print(f"Epoch: {epoch+1} === Loss: {loss_value}")            
+        
+        # resetting the model to eval mode
+        self.scoringModel.eval()
     
     def predict(self, x: pd.DataFrame):
-        feature_encodings = x.apply(self.__encodeText)
-        return self.scoringModel(feature_encodings)
+        print("Predicting relevance scores...")
+        feature_embedding_tensor  = torch.stack(x.apply(self.__encodeText, axis=1).to_list()).squeeze(1)
+        return self.scoringModel(feature_embedding_tensor)
