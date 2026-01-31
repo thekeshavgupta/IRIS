@@ -6,11 +6,14 @@ import torch
 import torch.nn as nn
 
 class IntentEncoderTrainer():
-    def __init__(self, datasetPath: str):
-        self.dataset = pd.read_csv(datasetPath)
-        self.dataset = self.dataset[['question', 'intent']]
-        self.dataset.drop_duplicates(inplace=True)
+    def __init__(self, datasetPath: str = None):
         self.transformermodel = SentenceTransformer('all-MiniLM-L6-v2')
+        if datasetPath:
+            self.dataset = pd.read_csv(datasetPath)
+            self.dataset = self.dataset[['question', 'intent']]
+            self.dataset.drop_duplicates(inplace=True)
+        else:
+            self.dataset = None
         
     def __prepareDataset(self):
         le = LabelEncoder()
@@ -48,5 +51,18 @@ class IntentEncoderTrainer():
         else:
             self.test_embed_output = self.transformermodel.encode(input['question'], convert_to_tensor=True).clone().requires_grad_(True).to(device)
         
-        self.test_output = self.nnModel(self.test_embed_output.unsqueeze_(dim=0))
+        self.test_output = self.nnModel(self.test_embed_output)
         return self.test_output
+
+    def save(self, model_path: str, classes_path: str):
+        torch.save(self.nnModel.state_dict(), model_path)
+        torch.save(self.intent_classes, classes_path)
+        print(f"Intent Encoder model saved to {model_path} and classes to {classes_path}")
+
+    def load(self, model_path: str, classes_path: str, inputSize=384, hiddenSize=256):
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.intent_classes = torch.load(classes_path)
+        self.nnModel = IntentEncoderNetwork(input_size=inputSize, hidden_size=hiddenSize, output_size=len(self.intent_classes)).to(device)
+        self.nnModel.load_state_dict(torch.load(model_path, map_location=device))
+        self.nnModel.eval()
+        print(f"Intent Encoder model loaded from {model_path}")

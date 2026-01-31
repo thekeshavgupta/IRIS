@@ -8,7 +8,7 @@ from pathlib import Path
 import ast
 
 class Scorer():
-    def __init__(self, intentEncoderTrainer, datasetPath: str):
+    def __init__(self, intentEncoderTrainer, datasetPath: str = None):
         self.intentEncoder = intentEncoderTrainer
         self.encoder = SentenceTransformer('all-MiniLM-L6-v2')
         self.dataPath = datasetPath
@@ -47,8 +47,8 @@ class Scorer():
         return torch.cat([
             query_embeddings, 
             doc_embeddings,
-            intent_encoder_output['query_intent_embed'].squeeze(0).to(device), 
-            intent_encoder_output['weighted_intent_sum'].squeeze(0).to(device), 
+            intent_encoder_output['query_intent_embed'].to(device), 
+            intent_encoder_output['weighted_intent_sum'].to(device), 
             product_embeddings,
             diff_embeddings,
             bm25_vals,
@@ -119,8 +119,17 @@ class Scorer():
         # resetting the model to eval mode
         self.scoringModel.eval()
     
-    def predict(self, x: pd.DataFrame):
-        print("Predicting relevance scores...")
         # feature_embedding_tensor  = torch.stack(x.apply(self.__encodeText, axis=1).to_list()).squeeze(1)
         feature_embedding_tensor = self.__batchEncode(x)
         return self.scoringModel(feature_embedding_tensor)
+
+    def save(self, model_path: str):
+        torch.save(self.scoringModel.state_dict(), model_path)
+        print(f"Scorer model saved to {model_path}")
+
+    def load(self, model_path: str):
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        # ScoringModel is already initialized in __init__, just load weights
+        self.scoringModel.load_state_dict(torch.load(model_path, map_location=device))
+        self.scoringModel.eval()
+        print(f"Scorer model loaded from {model_path}")

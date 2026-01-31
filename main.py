@@ -12,19 +12,26 @@ def main():
     
     # Preparing the baselines
     baseliner = Baseliner(clean_data)
-    train_data, dev_data, test_data  = baseliner.prepareBaselines(useBM25=True, useSBert=True, prepareTrainBaseliner=True, prepareTestBaseliner=True, training_subcount=100)
+    train_data, dev_data, test_data  = baseliner.prepareBaselines(useBM25=True, useSBert=True, prepareTrainBaseliner=True, prepareTestBaseliner=True, training_subcount=500)
     train_data.to_csv('relevance_training_data_with_baselines.csv')
     test_data.to_csv('relevance_test_data.csv')
     
     # Training the Intent Encoder Network for intent based classification
     intentEncoderTrainer = IntentEncoderTrainer('relevance_training_data_with_baselines.csv')
-    intentEncoderTrainer.train(384, 256)
-    
+    # Training the Scorer for final relevance prediction
     scorer = Scorer(intentEncoderTrainer, 'relevance_training_data_with_baselines.csv')
-    scorer.train(epochs=500)
-    test_data = pd.read_csv('relevance_test_data.csv')
-    if len(test_data) > 2000:
-        test_data = test_data.sample(2000, random_state=42)
+    scorer.train(epochs=200)
+    
+    # Save the models for reuse (app, etc.)
+    intentEncoderTrainer.save('intent_encoder_model.pt', 'intent_classes.pt')
+    scorer.save('scorer_model.pt')
+    
+    # Final Prediction
+    test_data_for_prediction = pd.read_csv('relevance_test_data.csv').sample(2000) # sampling to speed up prediction and evaluation for now 
+    predictions = scorer.predict(test_data_for_prediction)
+    test_data = pd.read_csv('relevance_test_data.csv') # Reload test_data for the next steps
+    if len(test_data) > 4000:
+        test_data = test_data.sample(4000, random_state=42)
     test_subset = test_data[['question', 'long_answers', 'intent', 'bm25_score', 'sbert_score']]
     outputs = scorer.predict(test_subset)
     refined_output = torch.sigmoid(outputs).detach().numpy().flatten()
