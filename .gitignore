@@ -1,5 +1,5 @@
 # Update the csv files not to be tracked by git
-*.csv
+relevance*.csv
 # Ignore Python cache files
 __pycache__/
 *.pyc
