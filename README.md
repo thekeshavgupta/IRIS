@@ -62,4 +62,4 @@ The model is evaluated on a hold-out test set using:
 * Once the models are created, run the app using `streamlit run app.py` to start the localhost webserver.
 * Enjoy and have fun!
 
-![alt text](Screenshot 2026-01-31 at 6.30.19 PM.png)
+![IRIS Search Demo](demo_screenshot.png)
