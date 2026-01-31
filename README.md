@@ -54,4 +54,11 @@ The model is evaluated on a hold-out test set using:
     *   **Optimization**: Vectorized operations for 100x speedup in creating training data.
 
 ### Phase-4: Final Polish
-*   *Pending*: UI Demo.
+*   *Completed*: UI Demo.
+
+---
+## How to execute ?
+* Make sure to run the main.py file so that it generates the training and testing baselines and also uncomment the baseline generation code as well
+* Once the models are created, run the app using streamlit command.
+* Enjoy and have fun!
+
