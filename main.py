@@ -11,20 +11,35 @@ def main():
     clean_data = data_loader.load_and_clean_data()
     
     # Preparing the baselines
-    baseliner = Baseliner(clean_data)
-    train_data, dev_data, test_data  = baseliner.prepareBaselines(useBM25=True, useSBert=True, prepareTrainBaseliner=True, prepareTestBaseliner=True, training_subcount=500)
-    train_data.to_csv('relevance_training_data_with_baselines.csv')
-    test_data.to_csv('relevance_test_data.csv')
+    # baseliner = Baseliner(clean_data)
+    # train_data, dev_data, test_data  = baseliner.prepareBaselines(useBM25=True, useSBert=True, prepareTrainBaseliner=True, prepareTestBaseliner=True, training_subcount=500)
+    # train_data.to_csv('relevance_training_data_with_baselines.csv')
+    # test_data.to_csv('relevance_test_data.csv')
     
-    # Training the Intent Encoder Network for intent based classification
+    # Training/Loading the Intent Encoder Network
     intentEncoderTrainer = IntentEncoderTrainer('relevance_training_data_with_baselines.csv')
-    # Training the Scorer for final relevance prediction
-    scorer = Scorer(intentEncoderTrainer, 'relevance_training_data_with_baselines.csv')
-    scorer.train(epochs=200)
+    intent_model_path = 'intent_encoder_model.pt'
+    intent_classes_path = 'intent_classes.pt'
+    scorer_model_path = 'scorer_model.pt'
     
-    # Save the models for reuse (app, etc.)
-    intentEncoderTrainer.save('intent_encoder_model.pt', 'intent_classes.pt')
-    scorer.save('scorer_model.pt')
+    import os
+    if os.path.exists(intent_model_path) and os.path.exists(intent_classes_path):
+        print("Loading existing Intent Encoder...")
+        intentEncoderTrainer.load(intent_model_path, intent_classes_path)
+    else:
+        print("Training Intent Encoder...")
+        intentEncoderTrainer.train(384, 256)
+        intentEncoderTrainer.save(intent_model_path, intent_classes_path)
+
+    # Training/Loading the Scorer for final relevance prediction
+    scorer = Scorer(intentEncoderTrainer, 'relevance_training_data_with_baselines.csv')
+    if os.path.exists(scorer_model_path):
+        print("Loading existing Scorer...")
+        scorer.load(scorer_model_path)
+    else:
+        print("Training Scorer...")
+        scorer.train(epochs=100)
+        scorer.save(scorer_model_path)
     
     # Final Prediction
     test_data_for_prediction = pd.read_csv('relevance_test_data.csv').sample(2000) # sampling to speed up prediction and evaluation for now 

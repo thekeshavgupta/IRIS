@@ -61,8 +61,8 @@ class IntentEncoderTrainer():
 
     def load(self, model_path: str, classes_path: str, inputSize=384, hiddenSize=256):
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.intent_classes = torch.load(classes_path)
+        self.intent_classes = torch.load(classes_path, weights_only=False)
         self.nnModel = IntentEncoderNetwork(input_size=inputSize, hidden_size=hiddenSize, output_size=len(self.intent_classes)).to(device)
-        self.nnModel.load_state_dict(torch.load(model_path, map_location=device))
+        self.nnModel.load_state_dict(torch.load(model_path, map_location=device, weights_only=False))
         self.nnModel.eval()
         print(f"Intent Encoder model loaded from {model_path}")
