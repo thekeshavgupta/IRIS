@@ -59,6 +59,7 @@ The model is evaluated on a hold-out test set using:
 ---
 ## How to execute ?
 * Make sure to run the main.py file so that it generates the training and testing baselines and also uncomment the baseline generation code as well
-* Once the models are created, run the app using streamlit command.
+* Once the models are created, run the app using `streamlit run app.py` to start the localhost webserver.
 * Enjoy and have fun!
 
+![alt text](Screenshot 2026-01-31 at 6.30.19 PM.png)
